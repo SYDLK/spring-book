@@ -3,9 +3,11 @@ package com.book.spring_book.service;
 
 import com.book.spring_book.domain.Article;
 import com.book.spring_book.dto.AddArticleRequest;
+import com.book.spring_book.dto.UpdateArticleRequest;
 import com.book.spring_book.repository.BlogRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -23,7 +25,21 @@ public class BlogService {
         return blogRepository.findAll();
     }
 
+    public Article findById(long id) {
+        return blogRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("not found : " + id));
+    }
+
     public void delete(Long id){
         blogRepository.deleteById(id);
+    }
+
+    @Transactional
+    public Article update(long id, UpdateArticleRequest request){
+        Article article = blogRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("not found: " + id));
+
+        article.update(request.getTitle(), request.getContent());
+        return article;
     }
 }
